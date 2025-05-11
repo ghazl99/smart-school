@@ -8,9 +8,17 @@ use App\Http\Requests\ClassroomRequest;
 use App\Http\Resources\ClassroomResource;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
-
-class ClassroomController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+class ClassroomController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin'), except: ['index']),
+        ];
+    }
+
     public function index()
     {
 

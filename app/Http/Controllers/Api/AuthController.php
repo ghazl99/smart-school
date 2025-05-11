@@ -45,10 +45,10 @@ class AuthController extends Controller
         }
     }
 
-    public function updateProfile(AuthRequest $customer)
+    public function updateProfile(AuthRequest $request)
     {
         // Validate incoming request data
-        $validatedData = $customer->validated();
+        $validatedData = $request->validated();
 
         // Retrieve the authenticated user
         $user = Auth::user();
@@ -63,9 +63,9 @@ class AuthController extends Controller
         // Save the updated user data
         $user->save();
         // Handle profile image upload if exist
-        if ($customer->hasFile('image')) {
+        if ($request->hasFile('image')) {
             $imageService = new ImageService();
-            $imageService->storeImage($user, $customer->file('image'), 'users');
+            $imageService->storeImage($user, $request->file('image'), 'users');
 
             // Refresh the user model to get updated data from DB (especially image path)
             $user->refresh();

@@ -21,7 +21,7 @@ class authResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 'token' => $this->token,
-                'image' => $image ? url('storage/' . $image->id . '/' . $image->file_name) : null,
+                'profile_photo_url' => $this->profile_photo_url,
             ];
     }
 }

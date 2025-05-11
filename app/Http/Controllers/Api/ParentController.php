@@ -13,10 +13,21 @@ use App\Http\Requests\ParentRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\ParentResource;
-
-class ParentController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+class ParentController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin')),
+        ];
+    }
 
+    public function index(){
+        $parents=MyParent::all();
+        return ApiResponse::success(ParentResource::collection($parents),200);
+    }
     public function store(ParentRequest $request)
     {
         DB::beginTransaction();
@@ -37,7 +48,7 @@ class ParentController extends Controller
             $user->save();
             $user->assignRole('parent');
 
-            MyParent::create([
+            $parent=MyParent::create([
                 'user_id' => $user->id,
                 'Name_Father' => $validatedData['Name_Father'],
                 'National_ID_Father' => $validatedData['National_ID_Father'],
@@ -65,7 +76,7 @@ class ParentController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(ParentResource::make($user), 200);
+            return ApiResponse::success(ParentResource::make($parent), 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return ApiResponse::error(419, $e->getMessage(), $e->getMessage());

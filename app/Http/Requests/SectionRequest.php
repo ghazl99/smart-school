@@ -24,13 +24,14 @@ class SectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Name' => 'required|string|max:255',
-            'Classroom_id' => 'required|exists:classrooms,id',
-            'max_count' => 'required|integer|min:1',
+            'Name' => $this->isMethod('post') ? 'required|string|max:255|unique:sections,Name': 'nullable|string|max:255|unique:sections,Name,' . $this->id,
+            'Classroom_id' => $this->isMethod('post') ? 'required|exists:classrooms,id':'nullable|exists:classrooms,id',
+            'max_count' => $this->isMethod('post') ? 'required|integer|min:1' : 'nullable|integer|min:1',
+            'Status' =>'nullable|boolean'
         ];
     }
 
-     protected function failedValidation(Validator $validator)
+    protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
             'status' => false,

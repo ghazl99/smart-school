@@ -17,10 +17,10 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::post('store/{model}', [App\Http\Controllers\Api\ModelController::class,'store']);
-    Route::get('index/{model}', [App\Http\Controllers\Api\ModelController::class,'index']);
+    Route::post('store/{model}', [App\Http\Controllers\Api\ModelController::class, 'store']);
+    Route::get('index/{model}', [App\Http\Controllers\Api\ModelController::class, 'index']);
     Route::apiResource('parents', \App\Http\Controllers\Api\ParentController::class);
     Route::apiResource('classroom', \App\Http\Controllers\Api\ClassroomController::class);
     Route::apiResource('section', \App\Http\Controllers\Api\SectionController::class);
-
+    Route::apiResource('student', \App\Http\Controllers\Api\StudentController::class);
 });

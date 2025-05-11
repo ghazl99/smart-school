@@ -8,9 +8,17 @@ use App\Http\Requests\ModelRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ModelResource;
-
-class ModelController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+class ModelController extends Controller  implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin'), except: ['index']),
+        ];
+    }
+
     public function index($model)
     {
         $modelName = "App\\Models\\" . $model;
