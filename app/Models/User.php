@@ -49,6 +49,19 @@ class User extends Authenticatable implements JWTSubject, HasMedia
             'password' => 'hashed',
         ];
     }
+    protected $appends = [
+        'profile_photo_url',
+    ];
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->getFirstMedia('users')) {
+            $image = $this->getFirstMedia('users');
+            return url('storage/' . $image->id . '/' . $image->file_name);
+        }
+
+        $name = urlencode($this->name);
+        return "https://ui-avatars.com/api/?name={$name}&background=0D8ABC&color=fff&size=256";
+    }
 
     public function getJWTIdentifier()
     {

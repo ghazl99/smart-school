@@ -18,11 +18,12 @@ class AuthController extends Controller
     public function validate()
     {
         $user = Auth::user();
-        $image = $user->getFirstMedia('users');
 
-        return ApiResponse::success(['name' => $user->name,
-        'email' => $user->email,
-        'image' => $image ? url('storage/' . $image->id . '/' . $image->file_name) : null,]);
+        return ApiResponse::success([
+            'name' => $user->name,
+            'email' => $user->email,
+            'profile_photo_url' => $user->profile_photo_url,
+        ]);
     }
 
     public function login(Request $request)

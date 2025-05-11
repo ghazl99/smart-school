@@ -16,12 +16,12 @@ class authResource extends JsonResource
     {
         $image = $this->getFirstMedia('users');
         return
-            ['id' => $this->id,
+            [
+                'id' => $this->id,
                 'name' => $this->name,
                 'email' => $this->email,
                 'token' => $this->token,
-
                 'image' => $image ? url('storage/' . $image->id . '/' . $image->file_name) : null,
-                            ];
+            ];
     }
 }
