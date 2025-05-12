@@ -27,7 +27,8 @@ class StudentResource extends JsonResource
             'class'             =>$this->section->classroom->Name,
             'section'           => $this->section?->Name,
             'academic_year'     => $this->academic_year,
-            'parent_name'       => ['Name_Father' => $this->parent?->Name_Father,
+            'parent_name'       => ['parent_id'   =>$this->parent_id,
+                                    'Name_Father' => $this->parent?->Name_Father,
                                     'Name_Mother' => $this->parent?->Name_Mother],
         ];
     }

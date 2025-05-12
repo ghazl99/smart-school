@@ -20,9 +20,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('store/{model}', [App\Http\Controllers\Api\ModelController::class, 'store']);
     Route::get('index/{model}', [App\Http\Controllers\Api\ModelController::class, 'index']);
     Route::apiResource('parents', \App\Http\Controllers\Api\ParentController::class);
-    Route::get('/parent-profile-personal',[\App\Http\Controllers\Api\ParentController::class,'profilePersonal']);
+    Route::get('parent-profile-personal',[\App\Http\Controllers\Api\ParentController::class,'profilePersonal']);
     Route::apiResource('classroom', \App\Http\Controllers\Api\ClassroomController::class);
     Route::apiResource('section', \App\Http\Controllers\Api\SectionController::class);
     Route::apiResource('student', \App\Http\Controllers\Api\StudentController::class);
-    Route::get('/student-profile-personal',[\App\Http\Controllers\Api\StudentController::class,'profilePersonal']);
+    Route::get('student-profile-personal',[\App\Http\Controllers\Api\StudentController::class,'profilePersonal']);
+    Route::apiResource('teacher',\App\Http\Controllers\Api\TeacherController::class);
+    Route::get('teacher-profile-personal',[\App\Http\Controllers\Api\TeacherController::class,'profilePersonal']);
+
 });

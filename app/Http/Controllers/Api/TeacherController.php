@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\StudentRequest;
-use App\Http\Resources\StudentResource;
-use App\Models\Student;
+use App\Http\Requests\TeacherRequest;
+use App\Http\Resources\TeacherResource;
+use App\Models\Teacher;
+use App\Models\TeacherSection;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class StudentController extends Controller implements HasMiddleware
+class TeacherController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
@@ -27,14 +28,14 @@ class StudentController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $students = Student::all();
-        return ApiResponse::success(StudentResource::collection($students), 200);
+        $teachers = Teacher::all();
+        return ApiResponse::success(TeacherResource::collection($teachers), 200);
     }
-
-    public function store(StudentRequest $request)
+    public function store(TeacherRequest $request)
     {
         DB::beginTransaction();
         try {
+
             $validatedData = $request->validated();
             $imageService = new ImageService();
 
@@ -43,27 +44,25 @@ class StudentController extends Controller implements HasMiddleware
             $user->email = $validatedData['email'];
             $user->password = Hash::make($validatedData['password']);
             $user->save();
-
             $token = Auth::attempt(['email' => $user->email, 'password' => $validatedData['password']]);
             $user = Auth::user();
             $user->token = $token;
             $user->save();
-            $user->assignRole('student');
+            $user->assignRole('teacher');
             if ($request->hasFile('image')) {
                 $imageService->storeImage($user, $request->file('image'), 'users');
             }
-            $student = Student::create([
-                'user_id' => $user->id,
-                'gender_id' => $validatedData['gender_id'],
-                'nationalitie_id' => $validatedData['nationalitie_id'],
-                'blood_id' => $validatedData['blood_id'],
-                'Date_Birth' => $validatedData['Date_Birth'],
-                'Section_id' => $validatedData['Section_id'],
-                'parent_id' => $validatedData['parent_id'],
-                'academic_year' => $validatedData['academic_year']
-            ]);
+            $teacher = new Teacher();
+            $teacher->user_id = $user->id;
+            $teacher->Specialization_id = $validatedData['Specialization_id'];
+            $teacher->Gender_id = $validatedData['Gender_id'];
+            $teacher->Joining_Date = $validatedData['Joining_Date'];
+            $teacher->Address = $validatedData['Address'];
+            $teacher->save();
+
+            $teacher->sections()->sync($validatedData['sections']);
             DB::commit();
-            return ApiResponse::success(StudentResource::make($student), 200);
+            return ApiResponse::success(TeacherResource::make($teacher), 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return ApiResponse::error(419, $e->getMessage(), $e->getMessage());
@@ -73,15 +72,15 @@ class StudentController extends Controller implements HasMiddleware
     public function profilePersonal()
     {
         $user = Auth::user();
-        if (!$user->hasRole('student')) {
-            return ApiResponse::error(403,'Unauthorized. You must be a student.');
+        if (!$user->hasRole('teacher')) {
+            return ApiResponse::error(403,'Unauthorized. You must be a teacher.');
         }
 
-        $student = Student::where('user_id', $user->id)->first();
+        $teacher = Teacher::where('user_id', $user->id)->first();
 
-        if (!$student) {
-            return ApiResponse::error(404,'Student not found.');
+        if (!$teacher) {
+            return ApiResponse::error(404,'Teacher not found.');
         }
-        return ApiResponse::success(StudentResource::make($student), 200);
+        return ApiResponse::success(TeacherResource::make($teacher), 200);
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Teacher extends Model
 {
-    protected $fillable=['user_id','Specialization_id','Gender_id','Joining_Date','Address'];
+    protected $fillable = ['user_id', 'Specialization_id', 'Gender_id', 'Joining_Date', 'Address'];
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -20,5 +20,10 @@ class Teacher extends Model
     public function gender()
     {
         return $this->belongsTo(Gender::class, 'Gender_id');
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class,'teacher_sections');
     }
 }
