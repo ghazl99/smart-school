@@ -28,11 +28,9 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        if (!$request->email) {
-            $authed = Auth::attempt(['name' => $request->name, 'password' => $request->password]);
-        } else {
-            $authed = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
-        }
+
+        $authed = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
+
         if ($authed) {
             $user = Auth::user();
             $user->token = $authed;
@@ -54,11 +52,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // Update basic user information if provided
-        $user->fill(array_filter([
-            'name' => $validatedData['name'] ?? null,
-            'email' => $validatedData['email'] ?? null,
-            'phone' => $validatedData['phone'] ?? null,
-        ]));
+        $user->update($validatedData);
 
         // Save the updated user data
         $user->save();

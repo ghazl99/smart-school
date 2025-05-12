@@ -17,10 +17,10 @@ class authResource extends JsonResource
         $image = $this->getFirstMedia('users');
         return
             [
-                'id' => $this->id,
-                'name' => $this->name,
-                'email' => $this->email,
-                'token' => $this->token,
+                'id'                => $this->id,
+                'name'              => $this->name,
+                'email'             => $this->email,
+                'token'             => $this->token,
                 'profile_photo_url' => $this->profile_photo_url,
             ];
     }

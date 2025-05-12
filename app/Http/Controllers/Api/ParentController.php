@@ -15,18 +15,20 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\ParentResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+
 class ParentController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin')),
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin'), except: ['profilePersonal']),
         ];
     }
 
-    public function index(){
-        $parents=MyParent::all();
-        return ApiResponse::success(ParentResource::collection($parents),200);
+    public function index()
+    {
+        $parents = MyParent::all();
+        return ApiResponse::success(ParentResource::collection($parents), 200);
     }
     public function store(ParentRequest $request)
     {
@@ -48,7 +50,7 @@ class ParentController extends Controller implements HasMiddleware
             $user->save();
             $user->assignRole('parent');
 
-            $parent=MyParent::create([
+            $parent = MyParent::create([
                 'user_id' => $user->id,
                 'Name_Father' => $validatedData['Name_Father'],
                 'National_ID_Father' => $validatedData['National_ID_Father'],
@@ -81,5 +83,20 @@ class ParentController extends Controller implements HasMiddleware
             DB::rollBack();
             return ApiResponse::error(419, $e->getMessage(), $e->getMessage());
         }
+    }
+    public function profilePersonal()
+    {
+        $user = Auth::user();
+
+        if (!$user->hasRole('parent')) {
+            return ApiResponse::error( 403,'Unauthorized. You must have the parent role.');
+        }
+
+        $parent = MyParent::where('user_id', $user->id)->first();
+
+        if (!$parent) {
+            return ApiResponse::error( 404,'Parent data not found.');
+        }
+        return ApiResponse::success(ParentResource::make($parent), 200);
     }
 }

@@ -15,10 +15,10 @@ class ClassroomResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'Name' => $this->Name,
+            'id'        => $this->id,
+            'Name'      => $this->Name,
             'GradeName' => $this->grade->Name,
-            'sections' => SectionResource::collection($this->whenLoaded('sections'))
+            'sections'  => SectionResource::collection($this->whenLoaded('sections'))
         ];
     }
 }

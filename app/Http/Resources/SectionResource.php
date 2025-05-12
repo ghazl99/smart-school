@@ -15,11 +15,11 @@ class SectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'Name' => $this->Name,
+            'id'            => $this->id,
+            'Name'          => $this->Name,
             'ClassroomName' => $this->classroom->Name,
-            'count' => $this->count,
-            'maxCount' => $this->max_count
+            'count'         => $this->count,
+            'maxCount'      => $this->max_count
         ];
     }
 }

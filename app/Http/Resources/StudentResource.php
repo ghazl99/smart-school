@@ -15,17 +15,20 @@ class StudentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->user->id,
-            'name' => $this->user->name,
-            'email' => $this->user->email,
+            'id'                => $this->user->id,
+            'name'              => $this->user->name,
+            'email'             => $this->user->email,
             'profile_photo_url' => $this->user->profile_photo_url,
-            'gender' => $this->gender?->Name,
-            'nationality' => $this->nationality?->Name,
-            'blood' => $this->blood?->Name,
-            'date_of_birth' => $this->Date_Birth,
-            'section' => $this->section?->Name,
-            'parent_name' => ['Name_Father'=>$this->parent?->Name_Father,'Name_Mother'=>$this->parent?->Name_Mother],
-            'academic_year' => $this->academic_year,
+            'gender'            => $this->gender?->Name,
+            'nationality'       => $this->nationality?->Name,
+            'blood'             => $this->blood?->Name,
+            'date_of_birth'     => $this->Date_Birth,
+            'grade'             =>$this->section->classroom->grade->Name,
+            'class'             =>$this->section->classroom->Name,
+            'section'           => $this->section?->Name,
+            'academic_year'     => $this->academic_year,
+            'parent_name'       => ['Name_Father' => $this->parent?->Name_Father,
+                                    'Name_Mother' => $this->parent?->Name_Mother],
         ];
     }
 }
