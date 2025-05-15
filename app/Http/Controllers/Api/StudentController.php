@@ -27,7 +27,7 @@ class StudentController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $students = Student::all();
+        $students = Student::paginate(10);
         return ApiResponse::success(StudentResource::collection($students), 200);
     }
 

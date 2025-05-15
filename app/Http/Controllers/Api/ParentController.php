@@ -27,7 +27,7 @@ class ParentController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $parents = MyParent::all();
+        $parents = MyParent::paginate(10);
         return ApiResponse::success(ParentResource::collection($parents), 200);
     }
     public function store(ParentRequest $request)

@@ -21,8 +21,7 @@ class ClassroomController extends Controller implements HasMiddleware
 
     public function index()
     {
-
-        $classrooms = Classroom::all();
+        $classrooms = Classroom::paginate(10);
         return ApiResponse::success(ClassroomResource::collection($classrooms), 200);
     }
 

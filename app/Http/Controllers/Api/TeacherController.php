@@ -29,7 +29,7 @@ class TeacherController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $teachers = Teacher::get();
+        $teachers = Teacher::paginate(10);
         return ApiResponse::success(TeacherResource::collection($teachers), 200);
     }
     public function store(TeacherRequest $request)

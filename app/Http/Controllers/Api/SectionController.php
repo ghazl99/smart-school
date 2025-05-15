@@ -32,7 +32,7 @@ class SectionController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $sections = Section::all();
+        $sections = Section::paginate(10);
         $sections->load(['classroom']);
         return ApiResponse::success(SectionResource::collection($sections), 200);
     }

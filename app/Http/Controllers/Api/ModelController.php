@@ -22,7 +22,7 @@ class ModelController extends Controller  implements HasMiddleware
     public function index($model)
     {
         $modelName = "App\\Models\\" . $model;
-        $data = $modelName::get();
+        $data = $modelName::paginate(10);
         return ApiResponse::success(ModelResource::collection($data), 200);
     }
 
