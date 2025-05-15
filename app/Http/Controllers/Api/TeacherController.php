@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Teacher;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
+use App\Models\AssignTeacher;
+use App\Models\TeacherSection;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -12,10 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\TeacherRequest;
 use App\Http\Resources\TeacherResource;
-use App\Models\Teacher;
-use App\Models\TeacherSection;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
 class TeacherController extends Controller implements HasMiddleware
 {
@@ -28,14 +29,14 @@ class TeacherController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $teachers = Teacher::all();
+        $teachers = Teacher::get();
         return ApiResponse::success(TeacherResource::collection($teachers), 200);
     }
     public function store(TeacherRequest $request)
     {
         DB::beginTransaction();
         try {
-
+            // dd($request);
             $validatedData = $request->validated();
             $imageService = new ImageService();
 
@@ -60,7 +61,21 @@ class TeacherController extends Controller implements HasMiddleware
             $teacher->Address = $validatedData['Address'];
             $teacher->save();
 
-            $teacher->sections()->sync($validatedData['sections']);
+            $sectionIds = $request->sections;
+            $subjectGroups = $request->subjects;
+            foreach ($sectionIds as $index => $sectionId) {
+                $subjectIds = $subjectGroups[$index];
+
+                foreach ($subjectIds as $subjectId) {
+                    AssignTeacher::create([
+                        'teacher_id' => $teacher->id,
+                        'section_id' => $sectionId,
+                        'subject_id' => $subjectId,
+                    ]);
+                }
+            }
+            $teacher = Teacher::with('assignTeachers.section', 'assignTeachers.subject')->find($teacher->id);
+
             DB::commit();
             return ApiResponse::success(TeacherResource::make($teacher), 200);
         } catch (\Exception $e) {
@@ -69,17 +84,21 @@ class TeacherController extends Controller implements HasMiddleware
         }
     }
 
+    public function show(Teacher $teacher){
+        $teacher->load(['assignTeachers.section']);
+        return ApiResponse::success(TeacherResource::make($teacher),200);
+    }
     public function profilePersonal()
     {
         $user = Auth::user();
         if (!$user->hasRole('teacher')) {
-            return ApiResponse::error(403,'Unauthorized. You must be a teacher.');
+            return ApiResponse::error(403, 'Unauthorized. You must be a teacher.');
         }
 
         $teacher = Teacher::where('user_id', $user->id)->first();
-
+        $teacher->load(['assignTeachers.section']);
         if (!$teacher) {
-            return ApiResponse::error(404,'Teacher not found.');
+            return ApiResponse::error(404, 'Teacher not found.');
         }
         return ApiResponse::success(TeacherResource::make($teacher), 200);
     }

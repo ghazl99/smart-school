@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\AssignTeacher;
 use Illuminate\Database\Eloquent\Model;
 
 class Section extends Model
@@ -13,8 +14,8 @@ class Section extends Model
         return $this->belongsTo(Classroom::class, 'Classroom_id');
     }
 
-    public function teachers()
+    public function assignTeachers()
     {
-        return $this->belongsToMany(Teacher::class,'teacher_sections');
+        return $this->hasMany(AssignTeacher::class);
     }
 }

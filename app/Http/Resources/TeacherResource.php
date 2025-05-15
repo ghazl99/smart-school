@@ -15,15 +15,25 @@ class TeacherResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                => $this->user->id,
-            'name'              => $this->user->name,
-            'email'             => $this->user->email,
-            'profile_photo_url' => $this->user->profile_photo_url,
-            'Joining_Date'      =>$this->Joining_Date,
-            'Address'           =>$this->Address,
-            'gender'            => $this->gender?->Name,
-            'specialization'    =>$this->specialization?->Name,
-            'sections'          =>$this->sections?->pluck('Name')
+            'id'                     =>$this->id,
+            'user_id'                => $this->user->id,
+            'name'                   => $this->user->name,
+            'email'                  => $this->user->email,
+            'profile_photo_url'      => $this->user->profile_photo_url,
+            'Joining_Date'           => $this->Joining_Date,
+            'Address'                => $this->Address,
+            'gender'                 => $this->gender?->Name,
+            'specialization'         => $this->specialization?->Name,
+            'sections with subject'  => $this->whenLoaded('assignTeachers', function () {
+                                        return $this->assignTeachers
+                                            ->groupBy('section_id')
+                                            ->map(fn($teachers) => [
+                                                'section' => new SectionResource($teachers->first()->section),
+                                                'subjects' => ModelResource::collection(
+                                                    $teachers->pluck('subject')->unique('id')
+                                                ),
+                                            ])->values();
+                                    }),
         ];
     }
 }

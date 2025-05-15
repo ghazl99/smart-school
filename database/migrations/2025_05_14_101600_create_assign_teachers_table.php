@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('teacher_sections', function (Blueprint $table) {
+        Schema::create('assign_teachers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('teacher_id');
             $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
-            $table->bigInteger('Section_id')->unsigned();
-            $table->foreign('Section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->bigInteger('section_id')->unsigned();
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->bigInteger('subject_id')->unsigned();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('teacher_classroom_sections');
+        Schema::dropIfExists('assign_teachers');
     }
 };

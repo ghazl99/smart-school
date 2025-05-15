@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             ReligionTableSeeder::class,
             SpecializationsTableSeeder::class,
             GradeSeeder::class,
+            SubjectSeeder::class,
             ClassroomTableSeeder::class,
             SectionsTableSeeder::class
         ]);

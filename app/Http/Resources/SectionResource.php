@@ -14,12 +14,24 @@ class SectionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         return [
-            'id'            => $this->id,
-            'Name'          => $this->Name,
-            'ClassroomName' => $this->classroom->Name,
-            'count'         => $this->count,
-            'maxCount'      => $this->max_count
+            'id'                        => $this->id,
+            'Name'                      => $this->Name,
+            'ClassroomName'             => $this->classroom->Name,
+            'count'                     => $this->count,
+            'maxCount'                  => $this->max_count,
+
+            'teachers with subject'     => $this->whenLoaded('assignTeachers', function () {
+                                            return $this->assignTeachers
+                                                ->groupBy('teacher_id')
+                                                ->map(fn($section) => [
+                                                    'teacher' => new TeacherResource($section->first()->teacher),
+                                                    'subjects' => ModelResource::collection(
+                                                        $section->pluck('subject')->unique('id')
+                                                    ),
+                                                ])->values();
+                                        }),
         ];
     }
 }

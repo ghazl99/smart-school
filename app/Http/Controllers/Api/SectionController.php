@@ -10,6 +10,7 @@ use App\Http\Requests\SectionRequest;
 use App\Http\Resources\SectionResource;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+
 class SectionController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
@@ -31,7 +32,8 @@ class SectionController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $sections=Section::all();
+        $sections = Section::all();
+        $sections->load(['classroom']);
         return ApiResponse::success(SectionResource::collection($sections), 200);
     }
 
@@ -44,5 +46,11 @@ class SectionController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             return ApiResponse::error(419, $e->getMessage(), $e->getMessage());
         }
+    }
+
+    public function show(Section $section)
+    {
+        $section->load(['assignTeachers.teacher.user']);
+        return ApiResponse::success(SectionResource::make($section));
     }
 }
