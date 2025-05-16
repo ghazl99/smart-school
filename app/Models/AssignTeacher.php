@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssignTeacher extends Model
 {
-    protected $table='assign_teachers';
-    protected $fillable=['teacher_id','section_id','subject_id'];
+    protected $table = 'assign_teachers';
+    protected $fillable = ['teacher_id', 'section_id', 'subject_id'];
 
-     public function teacher()
+    public function teacher()
     {
         return $this->belongsTo(Teacher::class);
     }
@@ -25,5 +25,10 @@ class AssignTeacher extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quizze::class);
     }
 }

@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    protected $fillable=['user_id','gender_id','nationalitie_id','blood_id','Date_Birth',
-    'Section_id','parent_id','academic_year'];
+    protected $fillable = [
+        'user_id',
+        'gender_id',
+        'nationalitie_id',
+        'blood_id',
+        'Date_Birth',
+        'Section_id',
+        'parent_id',
+        'academic_year'
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -32,5 +40,10 @@ class Student extends Model
     public function section()
     {
         return $this->belongsTo(Section::class, 'Section_id');
+    }
+
+    public function marks()
+    {
+        return $this->hasMany(Mark::class);
     }
 }

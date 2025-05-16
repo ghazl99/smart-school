@@ -27,5 +27,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('student-profile-personal',[\App\Http\Controllers\Api\StudentController::class,'profilePersonal']);
     Route::apiResource('teacher',\App\Http\Controllers\Api\TeacherController::class);
     Route::get('teacher-profile-personal',[\App\Http\Controllers\Api\TeacherController::class,'profilePersonal']);
-
+    Route::apiResource('quizze', \App\Http\Controllers\Api\QuizzeController::class);
+    Route::apiResource('mark', \App\Http\Controllers\Api\MarkController::class);
 });
