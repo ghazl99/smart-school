@@ -46,7 +46,8 @@ class QuizzeController extends Controller implements HasMiddleware
             $quizze = Quizze::create([
                 'name'               => $request->name,
                 'assign_teacher_id'  => $assignTeacher->id,
-                'max_score'          => $request->max_score
+                'max_score'          => $request->max_score,
+                'quiz_date'          => $request->quiz_date
             ]);
             if ($request->questions) {
                 foreach ($request->questions as $question) {

@@ -7,6 +7,7 @@ use App\Models\Quizze;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use App\Models\AssignTeacher;
+use Illuminate\Support\Carbon;
 use App\Http\Requests\MarkRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -52,14 +53,23 @@ class MarkController extends Controller implements HasMiddleware
         $user = Auth::user();
 
         if ($user->hasRole('student') && $user->student) {
-            $assignTeacher = AssignTeacher::find($user->student->Section_id);
-            $quizze = Quizze::with('marks')->where('assign_teacher_id', $assignTeacher)->whereNotNull('max_score')->get();
+            $studentId = $user->student->id;
+            $assignTeacher = AssignTeacher::where('section_id', $user->student->Section_id)->pluck('id');
+            $quizze = Quizze::whereIn('assign_teacher_id', $assignTeacher)
+                ->whereNotNull('max_score')
+                ->with(['marks' => function ($query) use ($studentId) {
+                    $query->where('student_id', $studentId);
+                }])
+                ->orderBy('quiz_date', 'desc')->paginate(10);
         } else if ($user->hasRole('teacher') && $user->teacher) {
             $assignTeachers = $user->teacher->assignTeachers->pluck('id')->unique();
-            $quizze = Quizze::with('marks')->whereIn('id', $assignTeachers)->whereNotNull('max_score')->paginate(10);
+            $quizze = Quizze::with('marks')->whereIn('assign_teacher_id', $assignTeachers)
+            ->whereNotNull('max_score')
+            ->orderBy('quiz_date', 'desc')->paginate(10);
         } else if ($user->hasRole('admin')) {
-            $quizze = Quizze::with('marks')->whereNotNull('max_score')->paginate(10);
+            $quizze = Quizze::with('marks')->whereNotNull('max_score')->orderBy('quiz_date', 'desc')->paginate(10);
         }
         return ApiResponse::success(QuizzeResource::collection($quizze), 200);
     }
+
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quizze extends Model
 {
-    protected $fillable = ['name', 'assign_teacher_id','max_score'];
+    protected $fillable = ['name', 'assign_teacher_id','max_score','quiz_date'];
 
     public function assignTeacher()
     {

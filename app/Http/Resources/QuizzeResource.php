@@ -18,6 +18,7 @@ class QuizzeResource extends JsonResource
             'id'                =>$this->id,
             'name'              =>$this->name,
             'max_score'         => $this->when(!is_null($this->max_score), $this->max_score),
+            'quiz_date'         => $this->when(!is_null($this->quiz_date), $this->quiz_date),
             'teacher_name'      =>$this->assignTeacher->teacher->user->name,
             'subject_name'      =>$this->assignTeacher->subject->Name,
             'section_name'      =>$this->assignTeacher->section->Name,

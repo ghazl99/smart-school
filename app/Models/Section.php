@@ -18,4 +18,8 @@ class Section extends Model
     {
         return $this->hasMany(AssignTeacher::class);
     }
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'Section_id');
+    }
 }

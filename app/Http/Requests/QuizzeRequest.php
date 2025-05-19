@@ -28,6 +28,7 @@ class QuizzeRequest extends FormRequest
             'section_id'               => 'required|exists:sections,id',
             'subject_id'               => 'required|exists:subjects,id',
             'max_score'                => 'nullable|numeric|min:10',
+            'quiz_date'                =>'nullable|after:today|date',
 
             'questions'                => 'nullable|array|min:1',
             'questions.*.title'        => 'required|string|max:500',
