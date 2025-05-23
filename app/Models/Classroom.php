@@ -16,4 +16,8 @@ class Classroom extends Model
     public function sections(){
         return $this->hasMany(Section::class,'Classroom_id');
     }
+
+    public function fees(){
+        return $this->hasMany(Fee::class, 'Classroom_id');
+    }
 }

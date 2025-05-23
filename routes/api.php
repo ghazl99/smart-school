@@ -26,10 +26,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('student', \App\Http\Controllers\Api\StudentController::class);
     Route::get('future-quizze',[\App\Http\Controllers\Api\StudentController::class,'futureQuizze']);
     Route::get('/top-students-per-section', [\App\Http\Controllers\Api\StudentController::class, 'topStudentsPerSection']);
+    Route::get('/student-account/{id}', [\App\Http\Controllers\Api\StudentController::class, 'getStudentAccountDetails']);
 
     Route::get('student-profile-personal',[\App\Http\Controllers\Api\StudentController::class,'profilePersonal']);
     Route::apiResource('teacher',\App\Http\Controllers\Api\TeacherController::class);
     Route::get('teacher-profile-personal',[\App\Http\Controllers\Api\TeacherController::class,'profilePersonal']);
     Route::apiResource('quizze', \App\Http\Controllers\Api\QuizzeController::class);
     Route::apiResource('mark', \App\Http\Controllers\Api\MarkController::class);
+    Route::apiResource('fees', \App\Http\Controllers\Api\FeeController::class);
 });

@@ -46,4 +46,9 @@ class Student extends Model
     {
         return $this->hasMany(Mark::class);
     }
+
+    public function studentAccounts()
+    {
+        return $this->hasMany(StudentAccount::class);
+    }
 }

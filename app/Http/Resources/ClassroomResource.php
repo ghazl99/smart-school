@@ -18,6 +18,7 @@ class ClassroomResource extends JsonResource
             'id'        => $this->id,
             'Name'      => $this->Name,
             'GradeName' => $this->grade->Name,
+            'fee'       =>FeeResource::collection($this->whenLoaded('fees')),
             'sections'  => SectionResource::collection($this->whenLoaded('sections'))
         ];
     }

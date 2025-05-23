@@ -26,7 +26,8 @@ class StudentController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin'), except: ['profilePersonal', 'futureQuizze','topStudentsPerSection']),
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('admin'), except: ['profilePersonal', 'futureQuizze', 'topStudentsPerSection', 'getStudentAccountDetails']),
+            new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('student'), only: ['getStudentAccountDetails'])
         ];
     }
 
@@ -105,8 +106,18 @@ class StudentController extends Controller implements HasMiddleware
 
     public function topStudentsPerSection()
     {
-        $sections = Section::with(['students' => function ($query) {
-            $query->withSum('marks as total_score', 'score')
+        $date = now()->subMonth(); // الشهر السابق
+        $month = $date->month;
+        $year  = $date->year;
+        $sections = Section::with(['students' => function ($query) use ($month, $year) {
+            $query->whereHas('marks', function ($q) use ($month, $year) {
+                $q->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month);
+            })
+                ->withSum(['marks as total_score' => function ($q) use ($month, $year) {
+                    $q->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month);
+                }], 'score')
                 ->orderByDesc('total_score');
         }])->get();
 
@@ -120,12 +131,53 @@ class StudentController extends Controller implements HasMiddleware
             });
 
             return [
-                'section_id'   => $section->id,
-                'section_name' => $section->Name,
-                'top_students' => $topStudents,
+                'section_id'    => $section->id,
+                'section_name'  => $section->Name,
+                'top_students'  => $topStudents,
             ];
         });
 
         return ApiResponse::success($result, 200);
+    }
+
+    public function getStudentAccountDetails($studentId)
+    {
+        $student = Student::with([
+            'studentAccounts.feeInvoice.fee',
+            'studentAccounts.receipt',
+            'studentAccounts.processing',
+            'studentAccounts.payment'
+        ])->findOrFail($studentId);
+
+        $accounts = $student->studentAccounts->map(function ($account) {
+            return [
+                'date'        => $account->date,
+                'type'        => $account->type,
+                'debit'       => $account->Debit,
+                'credit'      => $account->credit,
+                'description' => $account->description,
+                'invoice'     => $account->feeInvoice ? [
+                    'amount' => $account->feeInvoice->amount,
+                    'title'  => $account->feeInvoice->fee->title,
+                ] : null,
+                'receipt'     => $account->receipt ? [
+                    'Debit'  => $account->receipt->Debit,
+                    'date'   => $account->receipt->date
+                ] : null,
+                'payment'     => $account->payment ? [
+                    'amount' => $account->payment->amount,
+                    'date'   => $account->payment->date
+                ] : null,
+                'processing'  => $account->processing ? [
+                    'amount' => $account->processing->amount,
+                    'date'   => $account->processing->date
+                ] : null,
+            ];
+        });
+
+        return ApiResponse::success([
+            'student_name' => $student->user->name,
+            'accounts'     => $accounts
+        ], 200);
     }
 }

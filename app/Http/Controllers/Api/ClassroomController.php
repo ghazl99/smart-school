@@ -38,7 +38,7 @@ class ClassroomController extends Controller implements HasMiddleware
 
     public function show(Classroom $classroom)
     {
-        $classroom->load('sections');
+        $classroom->load('sections','fees');
         return ApiResponse::success(ClassroomResource::make($classroom), 200);
     }
 }
