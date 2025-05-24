@@ -34,4 +34,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('quizze', \App\Http\Controllers\Api\QuizzeController::class);
     Route::apiResource('mark', \App\Http\Controllers\Api\MarkController::class);
     Route::apiResource('fees', \App\Http\Controllers\Api\FeeController::class);
+    Route::apiResource('zoom-meetings', \App\Http\Controllers\Api\OnlineClasseController::class);
+
 });
